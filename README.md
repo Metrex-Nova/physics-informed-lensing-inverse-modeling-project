@@ -103,12 +103,23 @@ After training, the pipeline saves visualization outputs under `plots/`.
 
 ### Example outputs
 
-- **Baseline model** (predicted κ): `plots/baseline/epoch_040.png`
-- **Physics-informed model** (predicted κ + re-lensed): `plots/physics/epoch_040.png`
-- **Model comparison**: `plots/compare/comparison.png`
-- **Noise robustness**: `plots/noise_robustness/noise_robustness.png`
+#### Baseline model (predicted κ)
 
-> Note: `plots/` is ignored by git; run the training scripts to generate these files.
+![Baseline model output](plots/baseline/epoch_040.png)
+
+#### Physics-informed model (predicted κ + re-lensed)
+
+![Physics-informed output](plots/physics/epoch_040.png)
+
+#### Model comparison
+
+![Comparison plot](plots/compare/comparison.png)
+
+#### Noise robustness
+
+![Noise robustness plot](plots/noise_robustness/noise_robustness.png)
+
+> Note: `plots/` is tracked in this repo, but regenerated images may change after retraining.
 
 ---
 

@@ -17,8 +17,9 @@ checkpoints/
 # VS Code
 .vscode/
 
-# Data / plots
-plots/
+# Data
+# (plots are tracked for sample output; remove files if they become too large)
+# plots/
 
 # OS
 .DS_Store
