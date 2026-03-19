@@ -1,82 +1,180 @@
 # Physics-Informed Gravitational Lensing Inverse Modeling
 
-This repo implements a **physics-informed machine learning pipeline** to reconstruct a **mass density map (convergence `κ`)** from a **gravitationally lensed image**. The approach combines:
+A compact, end-to-end framework for reconstructing a **convergence map** (mass density κ) from a **gravitationally lensed image**, using differentiable physics and deep learning.
 
-- **Synthetic lensing simulation** (SIS & NFW lens models)
-- **FFT-based Poisson solve** (∇²ψ = κ) in the spectral domain
-- **Differentiable lensing pipeline** (ψ → α → lens equation)
-- **Deep learning models** (baseline CNN + U-Net)
-- **Physics-informed loss** that enforces consistency with the lens equation
+The core idea is to enforce the lens equation via a loss that couples the predicted mass map with the predicted lensing deflection.
 
 ---
 
-## ✅ Quickstart
+## Features
 
-1. Create a Python environment and install dependencies:
+- **Synthetic lensing generation** (SIS and simplified NFW mass profiles)
+- **FFT-based Poisson solver**: solve
+
+  $$\nabla^2 \psi = \kappa$$
+
+- **Deflection field**:
+
+  $$\boldsymbol{\alpha} = \nabla \psi$$
+
+- **Lens equation** (ray tracing):
+
+  $$\mathbf{x}_s = \mathbf{x}_i - \boldsymbol{\alpha}(\mathbf{x}_i)$$
+
+- **Models**: baseline CNN and U-Net
+- **Physics-informed loss** that enforces consistency between the predicted κ and produced lensed image
+
+---
+
+## Requirements
+
+Install dependencies:
 
 ```bash
-python -m venv ./venv
-# Windows
-./venv/Scripts/activate
-# macOS / Linux
-# source ./venv/bin/activate
-
 pip install -r requirements.txt
 ```
 
-2. Run the main pipeline:
+---
+
+## Running the full pipeline
+
+Run the full physics-informed workflow (data generation, training, evaluation):
 
 ```bash
 python main.py --mode train_physics
 ```
 
-3. Compare results:
+Other modes:
+
+```bash
+python main.py --mode train_baseline
+python main.py --mode compare
+python main.py --mode noise
+```
+
+Outputs are saved in:
+
+- `plots/` — generated figures
+- `checkpoints/` — model weights
+
+---
+
+## Project structure
+
+```
+.
+├── README.md
+├── REPORT.md
+├── requirements.txt
+├── main.py
+├── .gitignore
+├── plots/
+├── checkpoints/
+└── lensing/
+    ├── config.py
+    ├── data/
+    │   ├── mass_profiles.py
+    │   ├── source_generator.py
+    │   └── lensing_simulation.py
+    ├── physics/
+    │   ├── poisson_solver.py
+    │   ├── deflection.py
+    │   └── lens_equation.py
+    ├── models/
+    │   ├── baseline_cnn.py
+    │   └── unet.py
+    ├── training/
+    │   ├── train_baseline.py
+    │   └── train_physics_informed.py
+    ├── utils/
+    │   ├── dataset.py
+    │   ├── metrics.py
+    │   └── visualization.py
+    └── experiments/
+        ├── compare_models.py
+        └── noise_robustness.py
+```
+
+---
+
+## Results (sample outputs)
+
+After training, the pipeline saves visualization outputs under `plots/`.
+
+### Example outputs
+
+- **Baseline model** (predicted κ): `plots/baseline/epoch_040.png`
+- **Physics-informed model** (predicted κ + re-lensed): `plots/physics/epoch_040.png`
+- **Model comparison**: `plots/compare/comparison.png`
+- **Noise robustness**: `plots/noise_robustness/noise_robustness.png`
+
+> Note: `plots/` is ignored by git; run the training scripts to generate these files.
+
+---
+
+## Read the report
+
+A detailed report is available in `REPORT.md`. It includes:
+
+- mathematical formulation of the lensing inverse problem
+- implementation details for the FFT Poisson solver and lensing pipeline
+- training setup, loss definitions, and hyperparameters
+- evaluation results and error analysis
+- discussion of limitations and possible extensions
+
+---
+
+## Configuration
+
+Edit `lensing/config.py` to change:
+
+- dataset size, image resolution, and noise
+- training hyperparameters (epochs, learning rate, λ for physics loss)
+- model channel widths
+
+Then rerun:
+
+```bash
+python main.py --mode train_physics
+```
+
+---
+
+## Running specific components
+
+### Train the baseline model
+
+```bash
+python main.py --mode train_baseline
+```
+
+### Train the physics-informed model
+
+```bash
+python main.py --mode train_physics
+```
+
+### Compare models
 
 ```bash
 python main.py --mode compare
 ```
 
----
+### Noise robustness
 
-## 📁 Project Structure
-
-- `main.py` — entry point (runs training/experiments)
-- `lensing/` — core physics, data generation, models, training, utilities
-- `plots/` — exported figures
-- `checkpoints/` — saved model weights
+```bash
+python main.py --mode noise
+```
 
 ---
 
-## 🧠 What’s implemented
+## Notes
 
-### Physics
-- **Mass profiles**: SIS and simplified NFW
-- **Poisson solver**: FFT-based solve of `∇²ψ = κ`
-- **Deflection**: `α = ∇ψ`
-- **Lens equation**: `x_source = x_image - α(x_image)`
-
-### Models
-- **Baseline CNN** (image-to-image mapping)
-- **U-Net** (encoder-decoder with skip connections)
-
-### Training
-- Baseline training with MSE on `κ`
-- Physics-informed training with combined loss:
-  - MSE on `κ`
-  - λ · MSE on reconstructed lensed image
+- The code is designed to be modular and easy to extend.
+- For faster training, use a GPU and ensure `torch.cuda.is_available()` returns true.
 
 ---
 
-## 📌 Notes
-- The pipeline is modular: you can swap mass models, noise levels, and network architectures.
-- Outputs are saved under `plots/` and `checkpoints/`.
+## License
 
----
-
-## 🧪 Running Experiments
-- `compare_models.py` compares baseline vs physics-informed models.
-- `noise_robustness.py` evaluates robustness to input noise.
-
----
-
-If you want to extend this for real survey data or more sophisticated lens profiles, the modular structure makes it easy to plug in new physics components.
+Add a `LICENSE` file to clarify reuse terms.
