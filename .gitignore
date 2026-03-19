@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+.env
+venv/
+venv*/
+
+# PyTorch / checkpoints
+checkpoints/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# Data / plots
+plots/
+
+# OS
+.DS_Store
+Thumbs.db
